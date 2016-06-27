@@ -28,6 +28,13 @@ namespace Cvent.SchemaToPoco.Core.Util
         /// <returns>A first letter lowercased string.</returns>
         public static string LowerFirst(string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            //lower case the first letter of the 
+            //passed in value.
             return Char.ToLowerInvariant(value[0]) + value.Substring(1);
         }
 

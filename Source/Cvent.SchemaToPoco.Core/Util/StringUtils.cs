@@ -24,18 +24,18 @@ namespace Cvent.SchemaToPoco.Core.Util
         /// <summary>
         ///     lowercase the first letter in a string.
         /// </summary>
-        /// <param name="value">The string.</param>
-        /// <returns>A first letter lowercased string.</returns>
-        public static string LowerFirst(string value)
+        /// <param name="s">The string to lower.</param>
+        /// <returns>A first letter lower-cased string.</returns>
+        public static string LowerFirst(string s)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(s))
             {
-                return value;
+                return s;
             }
 
-            //lower case the first letter of the 
-            //passed in value.
-            return Char.ToLowerInvariant(value[0]) + value.Substring(1);
+            char[] arr = s.ToCharArray();
+            arr[0] = Char.ToLower(arr[0]);
+            return new string(arr);
         }
 
         /// <summary>

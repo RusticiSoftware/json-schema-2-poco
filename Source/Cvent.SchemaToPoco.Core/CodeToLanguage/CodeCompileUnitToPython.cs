@@ -1,7 +1,4 @@
 ﻿using System.CodeDom;
-using System.Text;
-using Cvent.SchemaToPoco.Core.Wrappers;
-using Microsoft.CSharp;
 
 namespace Cvent.SchemaToPoco.Core.CodeToLanguage
 {
@@ -11,13 +8,10 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
     // ReSharper disable once InconsistentNaming
     public class CodeCompileUnitToPython : CodeCompileUnitToLanguageBase
     {
-        private const string PHP_NAME_SPACE_DELIMITER = "\\";
-        private readonly CodeCompileUnit _codeCompileUnit;
 
         public CodeCompileUnitToPython(CodeCompileUnit codeCompileUnit)
             : base(codeCompileUnit)
         {
-            _codeCompileUnit = codeCompileUnit;
         }
 
         /// <summary>

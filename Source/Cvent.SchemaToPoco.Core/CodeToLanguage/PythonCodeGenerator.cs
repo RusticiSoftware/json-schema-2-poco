@@ -2,8 +2,6 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace Cvent.SchemaToPoco.Core.CodeToLanguage
@@ -11,8 +9,6 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
     public class PythonCodeGenerator : ICodeGenerator
     {
         private IndentedTextWriter _output;
-        private CodeGeneratorOptions _options;
-        private readonly Dictionary<string, string> _typeMapping = new Dictionary<string, string>();
         private const string INDENTED = "    ";
 
         public bool IsValidIdentifier(string value)
@@ -63,7 +59,6 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
 
         public void GenerateCodeFromCompileUnit(CodeCompileUnit e, TextWriter w, CodeGeneratorOptions o)
         {
-            _options = o ?? new CodeGeneratorOptions();
             if (_output == null)
             {
                 _output = new IndentedTextWriter(w, "    ");
@@ -193,39 +188,6 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
             }
         }
 
-        private string GetPhpType(string declaringType)
-        {
-            string phpType = declaringType;
-            if (_typeMapping.ContainsKey(declaringType.ToLower()))
-            {
-                phpType = _typeMapping[declaringType.ToLower()];
-            }
-            else if (phpType.StartsWith("List<"))
-            {
-                phpType = phpType.Replace("List<", "").Replace(">", "[]");
-            }
-            Debug.WriteLine("Declaring Type: " + declaringType + " new type: "  + phpType);
-            return phpType;
-        }
-
-        private void OutputStartingBrace()
-        {
-            if (_options.BracingStyle == "C")
-            {
-                _output.WriteLine("");
-                _output.WriteLine("{");
-            }
-            else
-            {
-                _output.WriteLine(" {");
-            }
-        }
-
-        private void GeneratePhpFileEnd()
-        {
-            _output.WriteLineNoTabs(string.Empty);
-            _output.WriteLineNoTabs("?>");
-        }
 
         private void GeneratePythonFileStart()
         {

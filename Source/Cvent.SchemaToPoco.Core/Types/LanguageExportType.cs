@@ -11,5 +11,8 @@ namespace Cvent.SchemaToPoco.Core.Types
         CSharp = 1,
         [Description(".php")]
         Php = 2,
+        [Description(".py")]
+        Python = 3,
+
     }
 }

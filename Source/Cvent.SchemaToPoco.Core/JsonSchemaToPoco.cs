@@ -131,18 +131,27 @@ namespace Cvent.SchemaToPoco.Core
                 IoUtils.CreateDirectoryFromNamespace(_configuration.OutputDirectory, _configuration.Namespace);
             }
 
+            string entryNamespace = String.Empty;
+            Dictionary<string,string> moduleList = new Dictionary<string, string>();
+
             foreach (var entry in generatedCode)
             {
                 if (!_configuration.Verbose)
                 {
-                    string saveLoc = Path.Combine(_configuration.OutputDirectory, entry.Key.Namespace.Replace('.', Path.DirectorySeparatorChar), entry.Key.Schema.Title + fileExtension);
-                    if (fileExtension.EndsWith("php"))
+                    string saveLoc;
+                    if (_configuration.LanguageExportType == LanguageExportType.Php || _configuration.LanguageExportType == LanguageExportType.Python)
                     {
+                        entryNamespace = entry.Key.Namespace;
                         saveLoc = Path.Combine(_configuration.OutputDirectory, entry.Key.Namespace.Replace('.', Path.DirectorySeparatorChar), StringUtils.LowerFirst(entry.Key.Schema.Title) + fileExtension);
+
+                        if (!moduleList.ContainsKey("\"" + StringUtils.LowerFirst(entry.Key.Schema.Title) + "\""))
+                            moduleList.Add("\"" + StringUtils.LowerFirst(entry.Key.Schema.Title) + "\"", "1");
+
                         IoUtils.GenerateFile(StringUtils.LowerFirst(entry.Value), saveLoc);
                     }
                     else
                     {
+                        saveLoc = Path.Combine(_configuration.OutputDirectory, entry.Key.Namespace.Replace('.', Path.DirectorySeparatorChar), entry.Key.Schema.Title + fileExtension);
                         IoUtils.GenerateFile(entry.Value, saveLoc);
                     }
                     Console.WriteLine("Wrote " + saveLoc);
@@ -151,6 +160,39 @@ namespace Cvent.SchemaToPoco.Core
                 {
                     Console.WriteLine(entry.Value);
                 }
+            }
+
+            if (_configuration.LanguageExportType == LanguageExportType.Python)
+            {
+                CreateInitPyFiles(entryNamespace, moduleList);
+            }
+
+        }
+
+        private void CreateInitPyFiles(string entryNamespace, Dictionary<string, string> moduleList)
+        {
+            var initpyFile = Path.Combine(_configuration.OutputDirectory, entryNamespace.Replace('.', Path.DirectorySeparatorChar), "__init__.py");
+            Console.WriteLine("Wrote " + initpyFile);
+            var directories = entryNamespace.Split(".".ToCharArray());
+
+            string allVar = "__all__ = [";
+            var sep = "";
+            foreach (var module in moduleList)
+            {
+                allVar += sep + module.Key;
+                sep = ",\n" + new String(' ', 11);
+            }
+            IoUtils.GenerateFile(allVar + "]", initpyFile);
+
+            //ignore last directory we just created that file
+            //before this code block.
+            var dirName = "";
+            for (int i = 0; i < directories.Length - 1; i++)
+            {
+                dirName = dirName + "\\" + directories[i];
+                var initpyEmptyFile = _configuration.OutputDirectory  + dirName + "\\__init__.py";
+                Console.WriteLine("Wrote " + initpyEmptyFile);
+                IoUtils.GenerateFile(string.Empty, initpyEmptyFile);
             }
         }
 
@@ -184,12 +226,20 @@ namespace Cvent.SchemaToPoco.Core
         private CodeCompileUnitToLanguageBase GetCodeCompileUnit(CodeCompileUnit codeUnit)
         {
             CodeCompileUnitToLanguageBase returnValue;
-            if(_configuration.LanguageExportType == LanguageExportType.Php)   
-                returnValue = new CodeCompileUnitToPHP(codeUnit);
-            else if (_configuration.LanguageExportType == LanguageExportType.CSharp)
-                returnValue = new CodeCompileUnitToCSharp(codeUnit);
-            else
-                throw new Exception("Unknown language export"); 
+            switch (_configuration.LanguageExportType)
+            {
+                case LanguageExportType.Php:
+                    returnValue = new CodeCompileUnitToPHP(codeUnit);
+                    break;
+                case LanguageExportType.CSharp:
+                    returnValue = new CodeCompileUnitToCSharp(codeUnit);
+                    break;
+                case LanguageExportType.Python:
+                    returnValue = new CodeCompileUnitToPython(codeUnit);
+                    break;
+                default:
+                    throw new Exception("Unknown language export"); 
+            }
             return returnValue;
         }
 

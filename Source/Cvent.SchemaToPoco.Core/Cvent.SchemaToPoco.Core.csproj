@@ -54,11 +54,16 @@
     <Compile Include="CodeToLanguage\CodeCompileUnitToCSharp.cs" />
     <Compile Include="CodeToLanguage\CodeCompileUnitToLanguageBase.cs" />
     <Compile Include="CodeToLanguage\CodeCompileUnitToPHP.cs" />
+    <Compile Include="CodeToLanguage\CodeCompileUnitToPython.cs" />
     <Compile Include="CodeToLanguage\CodeCompileUnitToVisualBasic.cs" />
     <Compile Include="CodeToLanguage\PhpCodeDomProvider.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CodeToLanguage\PhpCodeGenerator.cs" />
+    <Compile Include="CodeToLanguage\PythonCodeDomProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CodeToLanguage\PythonCodeGenerator.cs" />
     <Compile Include="Types\ArrayType.cs" />
     <Compile Include="Types\AttributeType.cs" />
     <Compile Include="Types\EnumExtensions.cs" />

@@ -184,15 +184,15 @@ namespace Cvent.SchemaToPoco.Core
             }
             IoUtils.GenerateFile(allVar + "]", initpyFile);
 
-            //ignore last directory we just created that file
+            //ignore last directory, we just created that file
             //before this code block.
             var dirName = "";
             for (int i = 0; i < directories.Length - 1; i++)
             {
-                dirName = dirName + "\\" + directories[i];
-                var initpyEmptyFile = _configuration.OutputDirectory  + dirName + "\\__init__.py";
-                Console.WriteLine("Wrote " + initpyEmptyFile);
+                dirName = Path.Combine(dirName, directories[i]);
+                var initpyEmptyFile = Path.Combine(_configuration.OutputDirectory, dirName, "__init__.py");                
                 IoUtils.GenerateFile(string.Empty, initpyEmptyFile);
+                Console.WriteLine("Wrote " + initpyEmptyFile);
             }
         }
 

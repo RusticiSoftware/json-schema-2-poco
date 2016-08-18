@@ -32,7 +32,7 @@ namespace Cvent.SchemaToPoco.Console
         /// <summary>
         ///     Constructor taking in command line arguments.
         /// </summary>
-        /// <param name="args">Command line arguments.</param>
+        /// <param name="args">Command line arguments.</param>  
         public JsonSchemaToPocoCLExecutor(IEnumerable<string> args)
         {
             _settings = ConfigureCommandLineOptions(args);

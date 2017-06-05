@@ -31,7 +31,7 @@ namespace Cvent.SchemaToPoco.Core.Wrappers
         /// <param name="s">The comment.</param>
         public void AddComment(string s)
         {
-            _property.Comments.Add(new CodeCommentStatement(s));
+            _property.Comments.Add(new CodeCommentStatement( "<summary>" + s + "</summary>", true));
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using Cvent.SchemaToPoco.Core.Wrappers;
 using Microsoft.CSharp;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using System.Collections.Generic;
 
 namespace Cvent.SchemaToPoco.Core
 {
@@ -34,6 +35,8 @@ namespace Cvent.SchemaToPoco.Core
         ///     The annotation type.
         /// </summary>
         private readonly AttributeType _attributeType;
+
+        private static IDictionary<string, string> enums = new Dictionary<string, string>();
 
         public JsonSchemaToCodeUnit(JsonSchemaWrapper schema, string requestedNamespace, AttributeType attributeType)
         {
@@ -108,6 +111,8 @@ namespace Cvent.SchemaToPoco.Core
                     // If it is an enum
                     if (schema.Enum != null)
                     {
+                        string[] members = new string[schema.Enum.Count];
+                        int memberIndex = 0;
                         var enumField = new CodeTypeDeclaration(propertyName);
                         var enumWrap = new EnumWrapper(enumField);
 
@@ -120,13 +125,27 @@ namespace Cvent.SchemaToPoco.Core
                         foreach (JToken j in schema.Enum)
                         {
                             enumWrap.AddMember(j.ToString().SanitizeIdentifier());
+                            members[memberIndex++] = j.ToString().SanitizeIdentifier();
                         }
-
-                        // Add to namespace
-                        nsWrap.AddClass(enumWrap.Property);
 
                         // note type for property declaration
                         type = new TypeBuilderHelper(_codeNamespace).GetCustomType(propertyName, true);
+                        string membersString = String.Join(",", members);
+
+                        if (enums.ContainsKey(type.FullName))
+                        {
+                            // verify the previously created enum is identical to the enum being created
+                            if (enums[type.FullName] != membersString)
+                            {
+                                throw new InvalidOperationException(type.FullName +  " was defined twice with different members.");
+                            }
+                        }
+                        else
+                        {
+                            // Add to namespace, if the enum hasn't already been generated
+                            nsWrap.AddClass(enumWrap.Property);
+                            enums.Add(type.FullName, membersString);
+                        }
                     }
                     else
                     {

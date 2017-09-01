@@ -10,6 +10,14 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
 {
     public class PhpCodeGenerator : ICodeGenerator
     {
+
+        private String[] reservedWords = new String[]{"abstract", "and", "array", "as", "break", "callable", "case", "catch", "class", "clone", "const", "continue",
+            "declare", "default", "die", "do", "echo", "else", "elseif", "empty", "enddeclare", "endfor", "endforeach", "endif",
+            "endswitch", "endwhile", "eval", "exit", "extends", "final", "finally", "for", "foreach", "function", "global", "goto",
+            "if", "implements", "include", "include_once", "instanceof", "insteadof", "interface", "isset", "list", "namespace", 
+            "new", "or", "print", "private", "protected", "public", "require", "require_once", "return", "static", "switch", "throw",
+            "trait", "try", "unset", "use", "var", "while", "xor", "yield"};
+
         private IndentedTextWriter _output;
         private CodeGeneratorOptions _options;
         private readonly Dictionary<string,string> _typeMapping = new Dictionary<string, string>();
@@ -114,7 +122,7 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
             if (type.IsEnum)
             {
                 _output.WriteLine("require_once (dirname(__FILE__) .  '/../../../../../includes/Enum.php');");
-                _output.Write("class {0} extends Enum ", StringUtils.LowerFirst(type.Name));
+                _output.Write("class {0} extends Enum ", GetSafePhpName(StringUtils.LowerFirst(type.Name)));
                 OutputStartingBrace();
 
                 _output.Indent++;
@@ -130,7 +138,7 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
         {
             if (type.IsClass)
             {
-                _output.Write("class {0} ", StringUtils.LowerFirst(type.Name));
+                _output.Write("class {0} ", GetSafePhpName(StringUtils.LowerFirst(type.Name)));
                 OutputStartingBrace();
 
                 _output.Indent++;
@@ -227,6 +235,19 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
             throw new NotImplementedException();
         }
 
-
+        private String GetSafePhpName(String name)
+        {
+            string safeName = name;
+            if (name != null && name != "")
+            {
+                //if the type is php keyword we need to change it, we do so by prepending a _
+                //This is also done during the JSON mapp[ing stage, they need to match.
+                if (Array.IndexOf(reservedWords, name.ToLowerInvariant()) != -1)
+                {
+                    safeName = "_" + name;
+                }
+            }
+            return safeName;
+        }
     }
 }

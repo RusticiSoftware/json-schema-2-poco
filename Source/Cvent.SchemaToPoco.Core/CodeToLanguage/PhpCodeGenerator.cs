@@ -33,6 +33,7 @@ namespace Cvent.SchemaToPoco.Core.CodeToLanguage
             _typeMapping.Add("list<string>", "string[]");
             _typeMapping.Add("list<int>", "int[]");
             _typeMapping.Add("list<double>", "float[]");
+            _typeMapping.Add("system.object", "float|null");
 
         }
         public bool IsValidIdentifier(string value)

@@ -74,7 +74,7 @@ namespace Cvent.SchemaToPoco.Core
         {
             var coloredConsoleTarget = new ColoredConsoleTarget
             {
-                Layout = "${date:format=yyyy-MM-dd} ${time:format=hh:mm:ss} [${level}] ${message}"
+                Layout = "${time:format=hh:mm:ss} [${level}] ${message}"
             };
             var loggingRule = new LoggingRule("*", LogLevel.Debug, coloredConsoleTarget);
             LogManager.Configuration = new LoggingConfiguration();
